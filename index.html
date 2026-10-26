@@ -474,9 +474,56 @@
       ${occhio(74,12,3.2)}${occhio(74,22,3.2)}
     </svg>`;
   }
+    // ---------- Icone speciali per i pesci aggiunti da Samu ----------
+  // Murena: lunga e ondulata, maculata, bocca aperta con i denti
+  function murenaSVG(cls){
+    const corpo = 'M5 27 C14 16 22 33 34 24 S54 13 64 21 S76 22 80 19';
+    const macchie = [[12,22],[20,27],[27,27],[35,22],[43,18],[50,17],[57,19],[64,21],[71,21]]
+      .map(([x,y],i)=>`<circle cx="${x}" cy="${y+(i%2?1.5:-1.5)}" r="1.5" fill="#e3c65a"/>`).join('');
+    return `<svg class="${cls}" viewBox="0 0 100 40" aria-hidden="true" focusable="false">
+      <path d="${corpo}" fill="none" stroke="#3a3014" stroke-width="11" stroke-linecap="round"/>
+      <path d="${corpo}" fill="none" stroke="#6e5c27" stroke-width="8.5" stroke-linecap="round"/>
+      <path d="M8 22 C16 12 23 28 34 19 S54 8 64 16 S74 17 79 14" fill="none" stroke="#8a7432" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+      ${macchie}
+      <path d="M76 13 Q86 11 94 15 L97 18 L88 19 L97 21 Q93 27 84 27 Q77 26 75 21 Z" fill="#6e5c27" stroke="#3a3014" stroke-width="1.2"/>
+      <path d="M97 18 L88 19 L97 21" fill="#5a1f1f"/>
+      <path d="M89 18.2 l1 1.2 l1 -1.4 l1 1.3 l1 -1.5 l1 1.4 M89 19.8 l1 -1.1 l1 1.3 l1 -1.2 l1 1.4 l1 -1.3" fill="none" stroke="#fff" stroke-width=".8"/>
+      <circle cx="84" cy="15.6" r="2.4" fill="#f4e7a8"/><circle cx="84.6" cy="15.6" r="1.3" fill="#10303f"/>
+    </svg>`;
+  }
+  // Cicala di mare: vista dall'alto, corazza larga, due "palette" davanti e coda a ventaglio
+  function cicalaSVG(cls){
+    const segmenti = [[47,22],[40,20],[33,18],[26,16]]
+      .map(([x,h])=>`<rect x="${x}" y="${20-h/2}" width="7.5" height="${h}" rx="3" fill="#b06a35" stroke="#6e3c1c" stroke-width="1"/>`).join('');
+    const zampe = [58,64,70,76].map(x=>`<path d="M${x} 9 L${x-3} 3 M${x} 31 L${x-3} 37" stroke="#8a4d26" stroke-width="1.6" stroke-linecap="round"/>`).join('');
+    const bozzi = [[60,14],[66,12],[72,14],[63,20],[70,20],[60,26],[66,28],[72,26]]
+      .map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.3" fill="#e0a062"/>`).join('');
+    return `<svg class="${cls}" viewBox="0 0 100 40" aria-hidden="true" focusable="false">
+      ${zampe}
+      <path d="M25 20 L9 8 Q2 20 9 32 Z" fill="#c27a3e" stroke="#6e3c1c" stroke-width="1"/>
+      <path d="M24 20 L8 14 M24 20 L6 20 M24 20 L8 26" stroke="#6e3c1c" stroke-width=".8" opacity=".7"/>
+      ${segmenti}
+      <path d="M55 8 L80 7 Q84 20 80 33 L55 32 Q52 20 55 8 Z" fill="#b8733a" stroke="#6e3c1c" stroke-width="1.2"/>
+      <path d="M57 20 L79 20" stroke="#6e3c1c" stroke-width=".8" opacity=".5"/>
+      ${bozzi}
+      <path d="M80 8 L93 3 Q99 8 96 15 L81 17 Z" fill="#c9884a" stroke="#6e3c1c" stroke-width="1.1"/>
+      <path d="M81 23 L96 25 Q99 32 93 37 L80 32 Z" fill="#c9884a" stroke="#6e3c1c" stroke-width="1.1"/>
+      <path d="M84 8 L94 6 M84 12 L95 11 M84 28 L95 29 M84 32 L94 34" stroke="#6e3c1c" stroke-width=".7" opacity=".6"/>
+      <circle cx="80" cy="18.4" r="1.6" fill="#10303f"/><circle cx="80" cy="21.6" r="1.6" fill="#10303f"/>
+    </svg>`;
+  }
+  // Collega un nome alla sua icona (basta che il nome contenga la parola)
+  function iconaSpeciale(p, cls){
+    const n = (p.nome||'').toLowerCase();
+    if(n.includes('murena')) return murenaSVG(cls);
+    if(n.includes('cicala')) return cicalaSVG(cls);
+    return null;
+  }
+
   let nClip = 0;
   function pesceSVG(p, cls){
     cls = cls || 'pesce';
+    const speciale = iconaSpeciale(p, cls); if(speciale) return speciale;
     if(p.forma==='polpo') return polpoSVG(p, cls);
     const f = (FORME[p.forma] || FORME.generica)(p), id = 'cp'+(nClip++);
     return `<svg class="${cls}" viewBox="0 0 100 40" aria-hidden="true" focusable="false">
@@ -646,14 +693,16 @@
   // ---------- Foto quando si batte un record ----------
   // Per ogni pesce, il nome del file della foto SENZA estensione.
   // Il file va caricato su GitHub accanto a index.html (es. polpo.jpg).
-   const FOTO_RECORD = {
+     const FOTO_RECORD = {
     'Polpo': 'polpo',
     'Orata': 'orata',
+    'Cicala Di Mare Magnosa': 'cicala'
   };
   // Frase sotto la foto del record (facoltativa, per ogni pesce)
   const FRASE_RECORD = {
     'Polpo': 'Ele aspetta un altro polpo e patate',
     'Orata': 'Ele vuole il bis',
+    'Cicala Di Mare Magnosa': 'Alla prossima ricetta ad alta quota'
   };
   
   const ESTENSIONI = ['jpg','jpeg','png','webp','JPG','JPEG','PNG','WEBP'];
